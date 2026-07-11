@@ -2,7 +2,14 @@ exports.validateRegister = (req,res,next)=>{
 
     const {name,email,password}=req.body;
 
-    if(!name || !email || !password){
+    if (
+      !name ||
+      !email ||
+      !password ||
+      !name.trim() ||
+      !email.trim() ||
+      !password.trim()
+    ) {
 
         return res.status(400).json({
 
@@ -22,7 +29,12 @@ exports.validateLogin=(req,res,next)=>{
 
     const {email,password}=req.body;
 
-    if(!email || !password){
+    if (
+      !email ||
+      !password ||
+      !email.trim() ||
+      !password.trim()
+    ) {
 
         return res.status(400).json({
 
