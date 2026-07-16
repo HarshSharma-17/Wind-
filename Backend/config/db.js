@@ -1,4 +1,4 @@
-throw new Error("THIS IS MY DB FILE");
+
 require("dotenv").config();
 
 const mysql = require("mysql2/promise");

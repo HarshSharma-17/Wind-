@@ -9,10 +9,13 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
-
+import axios from "axios";
 import Logo from "../assets/images/logo-circle.png";
 import GoogleLogo from "../assets/google.png";
 import SignupBg from "../assets/images/signup-bg.png";
+
+import { useNavigate } from "react-router-dom";
+import { registerUser } from "../api/authService";
 const Signup = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -24,6 +27,8 @@ const Signup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [googleHover, setGoogleHover] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const passwordStrength = () => {
     if (password.length < 6) return "Weak";
@@ -34,6 +39,60 @@ const Signup = () => {
   const passwordMatch =
     confirmPassword.length > 0 &&
     password === confirmPassword;
+
+  const handleSignup = async () => {
+  
+      if (!fullName || !email || !password || !confirmPassword) {
+  
+          alert("Please fill all fields");
+  
+          return;
+  
+      }
+  
+      if (password !== confirmPassword) {
+  
+          alert("Passwords do not match");
+  
+          return;
+  
+      }
+  
+      try {
+  
+          setLoading(true);
+  
+          const response = await registerUser({
+  
+              name: fullName,
+  
+              email,
+  
+              password,
+  
+          });
+  
+          alert(response.message);
+  
+          navigate("/login");
+  
+      } 
+      catch (error: unknown) {
+  if (axios.isAxiosError(error)) {
+    alert(error.response?.data?.message || "Signup Failed");
+  } else {
+    alert("Something went wrong");
+  }
+}
+      
+
+      finally {
+  
+          setLoading(false);
+  
+      }
+  
+  };
 
   return (
     <motion.div
@@ -270,9 +329,13 @@ const Signup = () => {
               </div>
             </div>
 
-            <button style={styles.loginButton}>
-              Create Account
+            <button style={styles.loginButton}
+              onClick={handleSignup}
+              disabled={loading}
+            >
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
+
 
             <div style={styles.divider}>
               <span style={styles.dividerText}>
