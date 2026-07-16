@@ -9,9 +9,46 @@ import {
 import logo from "../assets/images/logo-circle.png";
 import GoogleLogo from "../assets/google.png";
 import LoginBg from "../assets/images/login-bg.png";
+
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { loginUser } from "../api/authService";
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [googleHover, setGoogleHover] = useState(false);
+    const navigate = useNavigate();
+    
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    
+    const handleLogin = async () => {
+      try {
+        setLoading(true);
+    
+        const response = await loginUser({
+          email,
+          password,
+        });
+    
+        localStorage.setItem("token", response.token);
+    
+        alert(response.message);
+    
+        navigate("/dashboard");
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          alert(
+            error.response?.data?.message ||
+              "Login Failed"
+          );
+        } else {
+          alert("Something went wrong");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
   return (
     <motion.div
       style={styles.container}
@@ -90,6 +127,8 @@ const Login = () => {
             type="email"
             placeholder="Enter your email"
             style={styles.input}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
         />
 
     </div>
@@ -114,6 +153,8 @@ const Login = () => {
             type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
             style={styles.passwordInput}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
         />
 
         <button
@@ -133,17 +174,19 @@ const Login = () => {
 </div>
 
         <motion.button
-    style={styles.loginButton}
-    whileHover={{
-        scale:1.02,
-        y:-2,
-    }}
-    whileTap={{
-        scale:.98,
-    }}
->
-    Login
-</motion.button>
+            onClick={handleLogin}
+            disabled={loading}
+            style={styles.loginButton}
+            whileHover={{
+                scale:1.02,
+                y:-2,
+            }}
+            whileTap={{
+                scale:.98,
+            }}
+        >
+            {loading ? "Logging in..." : "Login"}
+        </motion.button>
 
         <div style={styles.divider}>
 
