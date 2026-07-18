@@ -8,7 +8,7 @@ const prompts = require("../utils/prompts");
 // =========================================
 exports.generateController = async (req, res) => {
   try {
-    const { prompt, framework = "react" } = req.body;
+    const { prompt, framework = "react", style = "Modern" } = req.body;
     const userId = req.user.id;
 
     if (!prompt) {
@@ -34,18 +34,42 @@ exports.generateController = async (req, res) => {
 
     // Save in Database
     await db.query(
-      "INSERT INTO generation_history (user_id, prompt, generated_code) VALUES (?, ?, ?)",
-      [
-        userId,
-        prompt,
-        JSON.stringify(generatedProject),
-      ]
+
+        `INSERT INTO generation_history
+        (
+            user_id,
+            prompt,
+            framework,
+            style,
+            generated_code
+        )
+        VALUES
+        (?, ?, ?, ?, ?)`,
+    
+        [
+            userId,
+            prompt,
+            framework,
+            style,
+            JSON.stringify(generatedProject),
+        ]
+    
     );
 
+    const [history] = await db.query(
+        "SELECT LAST_INSERT_ID() AS id"
+    );
+    
     res.status(201).json({
-      success: true,
-      message: "Project generated successfully",
-      project: generatedProject,
+    
+        success: true,
+    
+        message: "Project generated successfully",
+    
+        historyId: history[0].id,
+    
+        project: generatedProject,
+    
     });
 
   } catch (error) {

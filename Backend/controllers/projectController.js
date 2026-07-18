@@ -5,35 +5,72 @@ const db = require("../config/db");
 // Create Project
 // =============================
 exports.createProject = async (req, res) => {
-  try {
-    const { title, description, code } = req.body;
-    const userId = req.user.id;
 
-    if (!title || !code) {
-      return res.status(400).json({
-        success: false,
-        message: "Title and code are required",
-      });
+    try {
+
+        const {
+            title,
+            description,
+            framework,
+            style,
+            preview_image,
+            code,
+            favorite,
+        } = req.body;
+
+        const userId = req.user.id;
+
+        const [result] = await db.query(
+
+            `INSERT INTO projects
+            (
+                user_id,
+                title,
+                description,
+                framework,
+                style,
+                preview_image,
+                code,
+                favorite
+            )
+            VALUES
+            (?, ?, ?, ?, ?, ?, ?, ?)`,
+
+            [
+                userId,
+                title,
+                description,
+                framework,
+                style,
+                preview_image,
+                code,
+                favorite || false,
+            ]
+
+        );
+
+        res.status(201).json({
+
+            success: true,
+            message: "Project created successfully",
+            projectId: result.insertId,
+
+        });
+
     }
 
-    const [result] = await db.query(
-      "INSERT INTO projects (title, description, code, user_id) VALUES (?, ?, ?, ?)",
-      [title, description, code, userId]
-    );
+    catch (error) {
 
-    res.status(201).json({
-      success: true,
-      message: "Project created successfully",
-      projectId: result.insertId,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
+        res.status(500).json({
+
+            success: false,
+            message: error.message,
+
+        });
+
+    }
+
 };
-
 // =============================
 // Get All Projects
 // =============================
@@ -98,14 +135,46 @@ exports.updateProject = async (req, res) => {
   try {
     const projectId = req.params.id;
     const userId = req.user.id;
-
-    const { title, description, code } = req.body;
-
+    
+    const {
+        title,
+        description,
+        framework,
+        style,
+        preview_image,
+        code,
+        favorite,
+    } = req.body;
     const [result] = await db.query(
-      `UPDATE projects
-       SET title = ?, description = ?, code = ?
-       WHERE id = ? AND user_id = ?`,
-      [title, description, code, projectId, userId]
+    
+    `UPDATE projects
+    SET
+    
+    title=?,
+    description=?,
+    framework=?,
+    style=?,
+    preview_image=?,
+    code=?,
+    favorite=?
+    
+    WHERE
+    
+    id=?
+    AND user_id=?`,
+    
+    [
+    title,
+    description,
+    framework,
+    style,
+    preview_image,
+    code,
+    favorite,
+    projectId,
+    userId,
+    ]
+    
     );
 
     if (result.affectedRows === 0) {
@@ -218,13 +287,33 @@ exports.saveHistoryAsProject = async (req, res) => {
 
     const [result] = await db.query(
       `INSERT INTO projects
-      (title, description, code, user_id)
-      VALUES (?, ?, ?, ?)`,
+      (
+      user_id,
+      title,
+      description,
+      framework,
+      style,
+      code,
+      favorite
+      )
+      VALUES
+      (
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?
+      )`,
       [
-        title,
-        "Saved from AI Generation",
-        item.generated_code,
-        userId,
+      userId,
+      title,
+      "Saved from AI Generation",
+      item.framework,
+      item.style,
+      item.generated_code,
+      false
       ]
     );
 

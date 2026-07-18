@@ -1,10 +1,46 @@
 import { motion } from "framer-motion";
 import { Search, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 import "../styles/projects.css";
 import ProjectCard from "../components/cards/ProjectCard";
-
+import type { Project } from "../types/project";
+import { getProjects } from "../api/projectService";
 const Projects = () => {
+    const [projects, setProjects] = useState<Project[]>([]);
 
+    const [loading, setLoading] = useState(true);
+    
+    
+   
+    const loadProjects = async () => {
+
+    try {
+    
+            const data = await getProjects();
+    
+            setProjects(data.projects);
+    
+        }
+    
+        catch (error) {
+    
+            console.log(error);
+    
+        }
+    
+        finally {
+    
+            setLoading(false);
+    
+        }
+    
+    };
+    
+    useEffect(() => {
+    
+        loadProjects();
+    
+    }, []);
     return (
 
         <motion.div
@@ -106,7 +142,7 @@ const Projects = () => {
                     className="stat-box"
                     whileHover={{ y: -5 }}
                 >
-                    <h2>24</h2>
+                    <h2>{projects.length}</h2>
                     <p>Total Projects</p>
                 </motion.div>
             
@@ -114,7 +150,11 @@ const Projects = () => {
                     className="stat-box"
                     whileHover={{ y: -5 }}
                 >
-                    <h2>18</h2>
+                    <h2>{
+                        projects.filter(
+                            (project)=>project.framework==="React"
+                        ).length
+                    }</h2>
                     <p>React Projects</p>
                 </motion.div>
             
@@ -122,7 +162,11 @@ const Projects = () => {
                     className="stat-box"
                     whileHover={{ y: -5 }}
                 >
-                    <h2>6</h2>
+                    <h2>{
+                        projects.filter(
+                            (project)=>project.favorite
+                        ).length
+                    }</h2>
                     <p>Favorites</p>
                 </motion.div>
             
@@ -131,13 +175,22 @@ const Projects = () => {
 
             <div className="projects-grid">
             
-                <ProjectCard />
-                <ProjectCard />
-                <ProjectCard />
-                <ProjectCard />
-                <ProjectCard />
-                <ProjectCard />
-            
+                {loading ? (
+                
+                    <h2>Loading...</h2>
+                
+                ) : (
+                
+                    projects.map((project) => (
+                
+                        <ProjectCard
+                            key={project.id}
+                            project={project}
+                        />
+                
+                    ))
+                
+                )}
             </div>
 
             <div className="recent-activity">

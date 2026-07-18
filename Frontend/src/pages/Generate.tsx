@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { Upload, ImagePlus, X } from "lucide-react";
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { generateProject } from "../api/generateService";
 import "../styles/generate.css";
 
 const Generate = () => {
@@ -11,6 +13,9 @@ const Generate = () => {
     const [prompt, setPrompt] = useState("");
     const [framework, setFramework] = useState("React + Tailwind");
     const [theme, setTheme] = useState("Glass");
+    const [loading, setLoading] = useState(false);
+
+    const navigate = useNavigate();
     const handleImage = (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
@@ -21,6 +26,79 @@ const Generate = () => {
 
         setPreview(URL.createObjectURL(file));
 
+    };
+    const handleGenerate = async () => {
+    
+        if (!prompt.trim()) {
+    
+            alert("Please enter a prompt.");
+    
+            return;
+    
+        }
+    
+        try {
+    
+            setLoading(true);
+    
+            const frameworkMap: Record<string, string> = {
+    
+                "React + Tailwind": "react",
+    
+                "React + CSS": "react",
+    
+                "Next.js": "next",
+    
+                "HTML/CSS": "html",
+    
+                "Vue": "react",
+    
+            };
+    
+            const response = await generateProject({
+    
+                prompt,
+    
+                framework: frameworkMap[framework] || "react",
+    
+                style: theme,
+    
+            });
+    
+            navigate("/result", {
+    
+                state: {
+    
+                    project: response.project,
+    
+                    historyId: response.historyId,
+    
+                    prompt,
+    
+                    framework,
+    
+                    style: theme,
+    
+                },
+    
+            });
+    
+        } catch (error: unknown) {
+    
+            console.error(error);
+    
+            if (error instanceof Error) {
+                alert(error.message);
+            } else {
+                alert("Failed to generate project.");
+            }
+    
+        } finally {
+    
+            setLoading(false);
+    
+        }
+    
     };
 
     return (
@@ -260,8 +338,14 @@ const Generate = () => {
             
                     </div>
             
-                    <button className="generate-btn">
-                        ⚡ Generate UI
+                    <button className="generate-btn"
+                            onClick={handleGenerate}
+                            disabled={loading}>
+                        {
+                        loading
+                        ? "Generating..."
+                        : "⚡ Generate UI"
+                        }
                     </button>
             
                 </div>

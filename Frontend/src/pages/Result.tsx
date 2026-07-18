@@ -1,10 +1,29 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/result.css";
 
 const Result = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    
+    const {
+        project,
+        prompt,
+        framework,
+        style,
+    } = location.state || {};
 
     const [activeTab, setActiveTab] = useState("preview");
+
+    if (!project) {
+    
+        navigate("/generate");
+    
+        return null;
+    
+    }
+
 
     return (
 
@@ -111,14 +130,28 @@ const Result = () => {
 
                                 <h3>
 
-                                    Live Preview
-
+                                    Prompt
+                                
                                 </h3>
-
+                                
                                 <p>
-
-                                    Your generated UI will appear here.
-
+                                
+                                    {prompt}
+                                
+                                </p>
+                                
+                                <hr />
+                                
+                                <p>
+                                
+                                    <strong>Framework:</strong> {framework}
+                                
+                                </p>
+                                
+                                <p>
+                                
+                                    <strong>Style:</strong> {style}
+                                
                                 </p>
 
                             </div>
@@ -145,15 +178,19 @@ const Result = () => {
 
                             </div>
 
-                            <pre>{`export default function App() {
+                            <pre>
 
-    return (
-
-        <h1>Hello Wind</h1>
-
-    );
-
-}`}</pre>
+                            {
+                            
+                            typeof project === "string"
+                            
+                            ? project
+                            
+                            : JSON.stringify(project, null, 2)
+                            
+                            }
+                            
+                            </pre>
 
                         </div>
 

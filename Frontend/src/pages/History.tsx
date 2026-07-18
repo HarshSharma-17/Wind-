@@ -1,143 +1,275 @@
 import { motion } from "framer-motion";
-import { Search, Clock3 } from "lucide-react";
+import { Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import "../styles/history.css";
 
+import {
+    getHistory,
+    deleteHistory,
+} from "../api/generateService";
+
+import type { HistoryItem } from "../types/history";
+
 const History = () => {
-  return (
-    <motion.div
-      className="history-page"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-    >
-      {/* Header */}
 
-      <div className="history-header">
-        <div>
-          <span className="history-badge">🕘 Generation History</span>
+    const navigate = useNavigate();
 
-          <h1>History</h1>
+    const [history, setHistory] = useState<HistoryItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState("");
 
-          <p>
-            Browse all of your previously generated UI projects.
-          </p>
-        </div>
-      </div>
+    const loadHistory = async () => {
 
-      {/* Search */}
+        try {
 
-      <div className="history-search">
+            const response = await getHistory();
 
-        <Search size={20} />
+            setHistory(response.history);
 
-        <input
-          type="text"
-          placeholder="Search generations..."
-        />
+        } catch (error) {
 
-      </div>
+            console.error(error);
 
-      {/* Today */}
+        } finally {
 
-      <h2 className="history-section-title">
+            setLoading(false);
 
-        Today
+        }
 
-      </h2>
+    };
 
-      <motion.div
+    useEffect(() => {
 
-        className="history-card"
-        
-        initial={{opacity:0,y:20}}
-        
-        animate={{opacity:1,y:0}}
-        
-        transition={{duration:.45}}
-        
-        whileHover={{
-        
-        y:-6,
-        
-        scale:1.01
-        
-        }}
-        
+        loadHistory();
+
+    }, []);
+
+    const handleDelete = async (id: number) => {
+
+        try {
+
+            await deleteHistory(id);
+
+            setHistory((prev) =>
+                prev.filter((item) => item.id !== id)
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
+    };
+
+    const filteredHistory = useMemo(() => {
+
+        return history.filter((item) =>
+
+            item.prompt
+                .toLowerCase()
+                .includes(search.toLowerCase())
+
+        );
+
+    }, [history, search]);
+
+    return (
+
+        <motion.div
+            className="history-page"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: .4 }}
         >
 
-        <div className="history-thumbnail">
-        
-            <img
-                src="/preview.png"
-                alt="Project Preview"
-            />
-        
-        </div>
+            <div className="history-header">
 
-        <div className="history-content">
+                <div>
 
-          <h3>
+                    <span className="history-badge">
 
-            Landing Page UI
+                        🕘 Generation History
 
-          </h3>
+                    </span>
 
-          <p>
+                    <h1>
 
-            Design a modern SaaS landing page with hero section,
-            pricing cards and testimonials.
+                        History
 
-          </p>
+                    </h1>
 
-          <div className="history-tags">
+                    <p>
 
-            <span>
+                        Browse all of your previously generated UI projects.
 
-              React
+                    </p>
 
-            </span>
+                </div>
 
-            <span>
-
-              Tailwind
-
-            </span>
-
-            <span>
-
-              Glassmorphism
-
-            </span>
-
-          </div>
-
-        </div>
-
-        <div className="history-actions">
-
-            <span>5 min ago</span>
-        
-            <div className="action-buttons">
-        
-                <button className="open-btn">
-        
-                    👁 Open
-        
-                </button>
-        
-                <button className="delete-btn">
-        
-                    🗑
-        
-                </button>
-        
             </div>
-        
-        </div>
 
-      </motion.div>
-    </motion.div>
-  );
+            <div className="history-search">
+
+                <Search size={20} />
+
+                <input
+                    type="text"
+                    placeholder="Search generations..."
+                    value={search}
+                    onChange={(e) =>
+                        setSearch(e.target.value)
+                    }
+                />
+
+            </div>
+
+            <h2 className="history-section-title">
+
+                All Generations
+
+            </h2>
+
+            {loading ? (
+
+                <p>Loading...</p>
+
+            ) : filteredHistory.length === 0 ? (
+
+                <p>No generations found.</p>
+
+            ) : (
+
+                filteredHistory.map((item) => (
+
+                    <motion.div
+
+                        key={item.id}
+
+                        className="history-card"
+
+                        initial={{ opacity: 0, y: 20 }}
+
+                        animate={{ opacity: 1, y: 0 }}
+
+                        whileHover={{
+                            y: -6,
+                            scale: 1.01,
+                        }}
+
+                    >
+
+                        <div className="history-thumbnail">
+
+                            <img
+                                src="/preview.png"
+                                alt="Preview"
+                            />
+
+                        </div>
+
+                        <div className="history-content">
+
+                            <h3>
+
+                                {item.prompt}
+
+                            </h3>
+
+                            <p>
+
+                                Generated using {item.framework}
+
+                            </p>
+
+                            <div className="history-tags">
+
+                                <span>
+
+                                    {item.framework}
+
+                                </span>
+
+                                <span>
+
+                                    {item.style}
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div className="history-actions">
+
+                            <span>
+
+                                {new Date(
+                                    item.created_at
+                                ).toLocaleString()}
+
+                            </span>
+
+                            <div className="action-buttons">
+
+                                <button
+                                    className="open-btn"
+                                    onClick={() =>
+                                        navigate("/result", {
+
+                                            state: {
+
+                                                project:
+                                                    JSON.parse(
+                                                        item.generated_code
+                                                    ),
+
+                                                prompt:
+                                                    item.prompt,
+
+                                                framework:
+                                                    item.framework,
+
+                                                style:
+                                                    item.style,
+
+                                            },
+
+                                        })
+                                    }
+                                >
+
+                                    👁 Open
+
+                                </button>
+
+                                <button
+                                    className="delete-btn"
+                                    onClick={() =>
+                                        handleDelete(item.id)
+                                    }
+                                >
+
+                                    🗑
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </motion.div>
+
+                ))
+
+            )}
+
+        </motion.div>
+
+    );
+
 };
 
 export default History;

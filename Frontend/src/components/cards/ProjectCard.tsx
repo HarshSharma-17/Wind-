@@ -6,11 +6,19 @@ import {
   Star,
 } from "lucide-react";
 
-import PreviewImage from "../../assets/images/login-bg.png"; // temporary image
 import { useState } from "react";
+import type { Project } from "../../types/project";
 
-const ProjectCard = () => {
-  const [favorite, setFavorite] = useState(false);
+import PreviewImage from "../../assets/images/login-bg.png";
+
+
+interface ProjectCardProps {
+  project: Project;
+}
+
+
+const ProjectCard = ({ project }: ProjectCardProps) => {
+  const [favorite, setFavorite] = useState(project.favorite);
   return (
     <motion.div
       className="project-card"
@@ -41,23 +49,11 @@ const ProjectCard = () => {
 
       <div className="project-body">
 
-        <h3>
+        <h3>{project.title}</h3>
 
-          Netflix Landing Page
-
-        </h3>
-
-        <p>
-
-          React • Tailwind CSS
-
-        </p>
-
-        <span>
-
-          Last edited 2 hours ago
-
-        </span>
+        <p>{project.description}</p>
+        
+        <span>ID : {project.id}</span>
 
       </div>
 
