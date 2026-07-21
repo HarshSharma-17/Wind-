@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { saveProject } from "../api/projectService";
 import "../styles/result.css";
 
 const Result = () => {
@@ -9,12 +10,42 @@ const Result = () => {
     
     const {
         project,
-        prompt,
-        framework,
-        style,
+        historyId,
     } = location.state || {};
 
     const [activeTab, setActiveTab] = useState("preview");
+    const handleSaveProject = async () => {
+    
+        try {
+    
+            await saveProject(historyId);
+    
+            alert("Project saved successfully!");
+    
+        } catch (error) {
+    
+            console.error(error);
+    
+            alert("Failed to save project.");
+    
+        }
+    
+    };
+    const handleCopy = async () => {
+        try {
+            const code =
+                typeof project === "string"
+                    ? project
+                    : JSON.stringify(project, null, 2);
+    
+            await navigator.clipboard.writeText(code);
+    
+            alert("Code copied successfully!");
+        } catch (error) {
+            console.error(error);
+            alert("Failed to copy code.");
+        }
+    };
 
     if (!project) {
     
@@ -63,22 +94,21 @@ const Result = () => {
 
                 <div className="result-actions">
 
-                    <button className="secondary-action">
-
+                    <button
+                        className="secondary-action"
+                        onClick={handleSaveProject}
+                    >
+                    
                         Save Project
-
+                    
                     </button>
 
-                    <button className="secondary-action">
-
-                        Download ZIP
-
-                    </button>
-
-                    <button className="primary-action">
-
+                   
+                    <button
+                        className="primary-action"
+                        onClick={handleCopy}
+                    >
                         Copy Code
-
                     </button>
 
                 </div>
@@ -96,16 +126,7 @@ const Result = () => {
 
                 <div className="workspace-tabs">
 
-                    <button
-                        className={
-                            activeTab === "preview"
-                                ? "tab-btn active"
-                                : "tab-btn"
-                        }
-                        onClick={() => setActiveTab("preview")}
-                    >
-                        🖥 Preview
-                    </button>
+                    
 
                     <button
                         className={
@@ -122,79 +143,29 @@ const Result = () => {
 
                 <div className="workspace-body">
 
-                    {activeTab === "preview" ? (
-
-                        <div className="preview-panel">
-
-                            <div className="preview-window">
-
-                                <h3>
-
-                                    Prompt
-                                
-                                </h3>
-                                
-                                <p>
-                                
-                                    {prompt}
-                                
-                                </p>
-                                
-                                <hr />
-                                
-                                <p>
-                                
-                                    <strong>Framework:</strong> {framework}
-                                
-                                </p>
-                                
-                                <p>
-                                
-                                    <strong>Style:</strong> {style}
-                                
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    ) : (
+                    
+                    
 
                         <div className="code-panel">
-
+                        
                             <div className="code-header">
-
-                                <span>
-
-                                    App.tsx
-
-                                </span>
-
-                                <button>
-
+                        
+                                <span>App.tsx</span>
+                        
+                                <button onClick={handleCopy}>
                                     📋 Copy
-
                                 </button>
-
+                        
                             </div>
-
+                        
                             <pre>
-
-                            {
-                            
-                            typeof project === "string"
-                            
-                            ? project
-                            
-                            : JSON.stringify(project, null, 2)
-                            
-                            }
-                            
+                                {typeof project === "string"
+                                    ? project
+                                    : JSON.stringify(project, null, 2)}
                             </pre>
-
+                        
                         </div>
 
-                    )}
 
                 </div>
 

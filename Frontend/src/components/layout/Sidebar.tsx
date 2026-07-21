@@ -8,10 +8,18 @@ import {
 } from "lucide-react";
 
 import Logo from "../../assets/images/logo-circle.png";
-
+import { NavLink, useNavigate } from "react-router-dom";
 import "../../styles/sidebar.css";
 
 const Sidebar = () => {
+
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/login");
+    };
+
     return (
         <aside className="sidebar">
 
@@ -25,67 +33,84 @@ const Sidebar = () => {
                     />
 
                     <div>
-
                         <h2>Wind</h2>
-
                         <span>AI UI Generator</span>
-
                     </div>
 
                 </div>
 
                 <nav className="sidebar-menu">
 
-                    <a
-                        className="sidebar-item active"
-                        href="/dashboard"
+                    <NavLink
+                        to="/dashboard"
+                        className={({ isActive }) =>
+                            isActive
+                                ? "sidebar-item active"
+                                : "sidebar-item"
+                        }
                     >
-                        <LayoutDashboard size={20}/>
+                        <LayoutDashboard size={20} />
                         Dashboard
-                    </a>
+                    </NavLink>
 
-                    <a
-                        className="sidebar-item"
-                        href="/generate"
+                    <NavLink
+                        to="/generate"
+                        className={({ isActive }) =>
+                            isActive
+                                ? "sidebar-item active"
+                                : "sidebar-item"
+                        }
                     >
-                        <Sparkles size={20}/>
+                        <Sparkles size={20} />
                         Generate
-                    </a>
+                    </NavLink>
 
-                    <a
-                        className="sidebar-item"
-                        href="/projects"
+                    <NavLink
+                        to="/projects"
+                        className={({ isActive }) =>
+                            isActive
+                                ? "sidebar-item active"
+                                : "sidebar-item"
+                        }
                     >
-                        <FolderOpen size={20}/>
+                        <FolderOpen size={20} />
                         Projects
-                    </a>
+                    </NavLink>
 
-                    <a
-                        className="sidebar-item"
-                        href="/history"
+                    <NavLink
+                        to="/history"
+                        className={({ isActive }) =>
+                            isActive
+                                ? "sidebar-item active"
+                                : "sidebar-item"
+                        }
                     >
-                        <History size={20}/>
+                        <History size={20} />
                         History
-                    </a>
+                    </NavLink>
 
-                    <a
-                        className="sidebar-item"
-                        href="/profile"
+                    <NavLink
+                        to="/profile"
+                        className={({ isActive }) =>
+                            isActive
+                                ? "sidebar-item active"
+                                : "sidebar-item"
+                        }
                     >
-                        <User size={20}/>
+                        <User size={20} />
                         Profile
-                    </a>
+                    </NavLink>
 
                 </nav>
 
             </div>
 
-            <button className="logout-btn">
-
-                <LogOut size={18}/>
-
+            <button
+                className="logout-btn"
+                onClick={handleLogout}
+            >
+                <LogOut size={18} />
                 Logout
-
             </button>
 
         </aside>

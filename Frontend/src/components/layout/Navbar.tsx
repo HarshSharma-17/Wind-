@@ -1,38 +1,43 @@
-import {
-    Search,
-    Bell,
-} from "lucide-react";
 
 import Logo from "../../assets/images/logo-circle.png";
 
 import "../../styles/navbar.css";
+import { useEffect, useState } from "react";
+import { getProfile } from "../../api/profileService";
 
 const Navbar = () => {
+    const [userName, setUserName] = useState("");
+    useEffect(() => {
+    
+        const loadUser = async () => {
+    
+            try {
+    
+                const user = await getProfile();
+    
+                setUserName(user.name);
+    
+            } catch (error) {
+    
+                console.error(error);
+    
+            }
+    
+        };
+    
+        loadUser();
+    
+    }, []);
 
     return (
 
         <header className="navbar">
 
-            <div className="search-box">
-
-                <Search size={18} />
-
-                <input
-                    type="text"
-                    placeholder="Search projects..."
-                />
-
-            </div>
+            
 
             <div className="navbar-right">
 
-                <button className="notification-btn">
-
-                    <Bell size={20} />
-
-                    <span className="notification-dot"></span>
-
-                </button>
+                
 
                 <div className="profile-box">
 
@@ -40,7 +45,7 @@ const Navbar = () => {
 
                         <p>Welcome Back</p>
 
-                        <h4>Harsh 👋</h4>
+                        <h4>{userName || "User"} 👋</h4>
 
                     </div>
 

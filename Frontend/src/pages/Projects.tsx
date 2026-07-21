@@ -1,11 +1,13 @@
 import { motion } from "framer-motion";
-import { Search, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import "../styles/projects.css";
 import ProjectCard from "../components/cards/ProjectCard";
 import type { Project } from "../types/project";
 import { getProjects } from "../api/projectService";
+import { useNavigate } from "react-router-dom";
 const Projects = () => {
+    const navigate = useNavigate();
     const [projects, setProjects] = useState<Project[]>([]);
 
     const [loading, setLoading] = useState(true);
@@ -76,7 +78,10 @@ const Projects = () => {
 
                 </div>
 
-                <button className="new-project-btn">
+                <button
+                    className="new-project-btn"
+                    onClick={() => navigate("/generate")}
+                >
 
                     <Plus size={18}/>
 
@@ -86,53 +91,9 @@ const Projects = () => {
 
             </div>
 
-            {/* Search */}
+            
 
-            <div className="projects-search">
-
-                <Search size={20}/>
-
-                <input
-                    placeholder="Search projects..."
-                />
-
-            </div>
-
-            {/* Filters */}
-
-            <div className="filter-row">
-
-                <button className="active">
-
-                    All
-
-                </button>
-
-                <button>
-
-                    React
-
-                </button>
-
-                <button>
-
-                    Next.js
-
-                </button>
-
-                <button>
-
-                    Vue
-
-                </button>
-
-                <button>
-
-                    Favorites
-
-                </button>
-
-            </div>
+            
 
             
 
@@ -193,51 +154,7 @@ const Projects = () => {
                 )}
             </div>
 
-            <div className="recent-activity">
             
-                <h2>
-            
-                    Recent Activity
-            
-                </h2>
-            
-                <div className="activity-item">
-            
-                    ✅ Netflix Landing Page updated
-            
-                    <span>
-            
-                        5 min ago
-            
-                    </span>
-            
-                </div>
-            
-                <div className="activity-item">
-            
-                    ⭐ Spotify Dashboard marked as favorite
-            
-                    <span>
-            
-                        Today
-            
-                    </span>
-            
-                </div>
-            
-                <div className="activity-item">
-            
-                    🚀 Tesla UI generated successfully
-            
-                    <span>
-            
-                        Yesterday
-            
-                    </span>
-            
-                </div>
-            
-            </div>
 
         </motion.div>
 

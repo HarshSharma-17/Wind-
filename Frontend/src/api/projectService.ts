@@ -45,3 +45,26 @@ export const deleteProject = async (id: number) => {
     return response.data;
 
 };
+export const saveProject = async (historyId: number) => {
+
+    const response = await axios.post(
+
+        `/projects/save/${historyId}`,
+
+        {},
+
+        {
+
+            headers: {
+
+                Authorization: `Bearer ${getToken()}`
+
+            }
+
+        }
+
+    );
+
+    return response.data;
+
+};

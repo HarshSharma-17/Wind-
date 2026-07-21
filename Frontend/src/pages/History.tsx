@@ -9,7 +9,7 @@ import {
     getHistory,
     deleteHistory,
 } from "../api/generateService";
-
+import Logo from "../assets/images/logo-circle.png";
 import type { HistoryItem } from "../types/history";
 
 const History = () => {
@@ -164,8 +164,8 @@ const History = () => {
                         <div className="history-thumbnail">
 
                             <img
-                                src="/preview.png"
-                                alt="Preview"
+                                src={Logo}
+                                alt="Wind"
                             />
 
                         </div>
