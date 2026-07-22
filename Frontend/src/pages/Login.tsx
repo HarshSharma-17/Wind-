@@ -222,15 +222,14 @@ const Login = () => {
         </button>
 
         <p style={styles.signupText}>
-
             Don't have an account?
-
-            <span style={styles.signupLink}>
-
+        
+            <span
+                style={styles.signupLink}
+                onClick={() => navigate("/signup")}
+            >
                 {" "}Sign Up
-
             </span>
-
         </p>
 
     </div>
@@ -303,7 +302,7 @@ circleTwo:{
 
 card:{
     width:920,
-    height:560,
+    height:630,
     background:"rgba(255,255,255,.72)",
     backdropFilter:"blur(24px)",
     border:"1px solid rgba(255,255,255,.65)",

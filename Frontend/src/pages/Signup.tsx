@@ -368,8 +368,11 @@ const Signup = () => {
 
             <p style={styles.signupText}>
               Already have an account?
-
-              <span style={styles.signupLink}>
+            
+              <span
+                style={styles.signupLink}
+                onClick={() => navigate("/login")}
+              >
                 {" "}Login
               </span>
             </p>
