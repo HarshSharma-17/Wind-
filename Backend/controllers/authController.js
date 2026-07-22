@@ -102,7 +102,82 @@ const login = async (req, res) => {
     });
   }
 };
+
+// =============================
+// Get Profile
+// =============================
+const getProfile = async (req, res) => {
+
+    try {
+
+        const userId = req.user.id;
+
+        const [users] = await db.query(
+            `SELECT id, name, email, created_at
+             FROM users
+             WHERE id = ?`,
+            [userId]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            user: users[0],
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+
+    }
+
+};
+
+// =============================
+// Update Profile
+// =============================
+const updateProfile = async (req, res) => {
+
+    try {
+
+        const userId = req.user.id;
+
+        const { name } = req.body;
+
+        await db.query(
+            `UPDATE users
+             SET name = ?
+             WHERE id = ?`,
+            [name, userId]
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+
+    }
+
+};
 module.exports = {
-  register,
-  login,
+    register,
+    login,
+    getProfile,
+    updateProfile,
 };
